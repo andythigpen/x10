@@ -6,29 +6,47 @@
 #define TRANS_PIN    6
 #define RECV_PIN     4
 
+// Command state-machine
+#define COMMAND_STATE    0
 #define HOUSE_CODE_STATE 1
 #define UNIT_CODE_STATE  2
 #define REPEAT_STATE     3
 #define ACTION_STATE     4
-#define INITIAL_STATE    HOUSE_CODE_STATE
+#define INITIAL_STATE    COMMAND_STATE
 
+// Commands
+#define CMD_SENSOR_QUERY    's'
+#define CMD_X10             'x'
+#define CMD_HELP            '?'
+
+// X10 actions
+#define X10_ON      '|'
+#define X10_OFF     'O'
+#define X10_BRIGHT  '+'
+#define X10_DIM     '-'
+
+// Pins
 const int ledPin = 13;
+const int analogInPin = A0;
+
+// LED heartbeat
 int ledState = LOW;
 long previousMillis = 0;
 long interval = 500;
-int incomingByte = 0;
-int commandState = HOUSE_CODE_STATE;
 
+// Serial commands & state-machine
+int incomingByte = 0;
+int commandState = INITIAL_STATE;
+
+// X10
 x10 myHouse = x10(ZC_PIN, TRANS_PIN, RECV_PIN);
 int currentHouseCode = 0;
 int currentUnitCode = 0;
 int currentAction = 0;
 int currentRepeatTimes = 0;
 
-void setup() {
-  pinMode(ledPin, OUTPUT);
-  Serial.begin(9600);
-}
+// Photoresistor analog input
+int sensorValue = 0;
 
 void sendX10Command() {
   int houseCode, unitCode, command, repeatTimes;
@@ -59,140 +77,123 @@ void sendX10Command() {
     case 'g': unitCode = UNIT_16; break;
   }
   switch (currentAction) {
-    case '[': command = ON; break;
-    case ']': command = OFF; break;
-    case '+': command = BRIGHT; break;
-    case '-': command = DIM; break;
-    case '{': command = ALL_LIGHTS_ON; break;
-    case '}': command = ALL_LIGHTS_OFF; break;
+    case X10_ON:     command = ON; break;
+    case X10_OFF:    command = OFF; break;
+    case X10_BRIGHT: command = BRIGHT; break;
+    case X10_DIM:    command = DIM; break;
   }
+  // convert from ascii to byte
   repeatTimes = currentRepeatTimes - 48;
 
-  myHouse.write(houseCode, unitCode, REPEAT_TIMES);
+  myHouse.write(houseCode, unitCode, 1);
   myHouse.write(houseCode, command, repeatTimes);
+}
+
+void printCurrentState() {
+    Serial.print(commandState);
+    Serial.print(" House:");
+    Serial.write(currentHouseCode);
+    Serial.print(" Unit:");
+    Serial.write(currentUnitCode);
+    Serial.print(" Action:");
+    Serial.write(currentAction);
+    Serial.print(" Repeat:");
+    Serial.write(currentRepeatTimes);
+    Serial.print("\n");
 }
 
 void handleCommand(int command) {
   switch (commandState) {
-    case HOUSE_CODE_STATE:
-      if (command == '?') {
-        Serial.write("Still alive!\n");
+    case COMMAND_STATE:
+      if (command == CMD_SENSOR_QUERY) {
+        sensorValue = analogRead(analogInPin);
+        Serial.println(map(sensorValue, 0, 1023, 0, 255));
+      }
+      else if (command == CMD_X10) {
+        commandState = HOUSE_CODE_STATE;
+      }
+      else if (command == CMD_HELP) {
+        Serial.println("Current state: ");
+        printCurrentState();
+        Serial.print(CMD_SENSOR_QUERY);
+        Serial.println(": returns current sensor value");
+        Serial.print(CMD_X10);
+        Serial.println(": send an X10 command, format:");
+        Serial.println("   [house][unit][repeat][action]");
+        Serial.print(CMD_HELP);
+        Serial.println(": this help");
         break;
       }
+      break;
+
+    case HOUSE_CODE_STATE:
       if (command < 'A' || command > 'F') {
-        Serial.write("Unrecognized house code.\n");
+        Serial.println("Unrecognized house code.");
+        printCurrentState();
         commandState = INITIAL_STATE;
         break;
       }
       currentHouseCode = command;
       commandState = UNIT_CODE_STATE;
       break;
+
     case UNIT_CODE_STATE:
       if (! ((command >= '1' && command <= '9')
           || (command >= 'a' && command <= 'g'))) {
-        Serial.write("Unrecognized unit code.\n");
+        Serial.println("Unrecognized unit code.");
+        printCurrentState();
         commandState = INITIAL_STATE;
         break;
       }
       currentUnitCode = command;
       commandState = REPEAT_STATE;
       break;
+
     case REPEAT_STATE:
       if (command < '1' || command > '9') {
-        Serial.write("Unrecognized repeat times.\n");
+        Serial.println("Unrecognized repeat times.");
+        printCurrentState();
         commandState = INITIAL_STATE;
         break;
       }
       currentRepeatTimes = command;
       commandState = ACTION_STATE;
       break;
+
     case ACTION_STATE:
-      if (! (command == '+' || command == '-'
-          || command == '[' || command == ']'
-          || command == '{' || command == '}')) {
-        Serial.write("Unrecognized action code.\n");
+      if (! (command == X10_ON ||
+             command == X10_OFF ||
+             command == X10_BRIGHT ||
+             command == X10_DIM)) {
+        Serial.println("Unrecognized action code.");
+        printCurrentState();
         commandState = INITIAL_STATE;
         break;
       }
       currentAction = command;
       sendX10Command();
-      Serial.write("Received command.\n");
+      Serial.print("Sent X10 command: ");
+      printCurrentState();
       commandState = INITIAL_STATE;
       break;
+
     default:
-      Serial.write("Unknown state.\n");
+      Serial.println("Unknown state.");
+      printCurrentState();
       commandState = INITIAL_STATE;
       break;
   }
 }
 
-/*void handleCommand(int command) {
-  switch (command) {
-    case 'A':
-    case 'B':
-    case 'C':
-    case 'D':
-    case 'E':
-    case 'F':
-      currentHouseCode = command;
-      Serial.write("Current House/Unit code is ");
-      break;
-    case '1':
-    case '2':
-    case '3':
-    case '4':
-    case '5':
-    case '6':
-    case '7':
-    case '8':
-    case '9':
-    case 'a':
-    case 'b':
-    case 'c':
-    case 'd':
-    case 'e':
-    case 'f':
-    case '0':
-      currentUnitCode = command;
-      Serial.write("Current House/Unit code is ");
-      break;
-    case '?':
-      Serial.write("Current House/Unit code is ");
-      break;
-    case '[':
-      sendX10Command(ON);
-      Serial.write("Turning on ");
-      break;
-    case ']':
-      sendX10Command(OFF);
-      Serial.write("Turning off ");
-      break;
-    case '+':
-      sendX10Command(BRIGHT);
-      Serial.write("Brightening ");
-      break;
-    case '-':
-      sendX10Command(DIM);
-      Serial.write("Dimming ");
-      break;
-    default:
-      Serial.print("Unrecognized command\n");
-      return;
-  }
-
-  Serial.write(currentHouseCode);
-  Serial.write("-");
-  Serial.write(currentUnitCode);
-  Serial.write(".\n");
-}*/
+void setup() {
+  pinMode(ledPin, OUTPUT);
+  Serial.begin(9600);
+  Serial.println("Lightbot 5000 reporting for duty!");
+}
 
 void loop() {
-
   if (Serial.available() > 0) {
     incomingByte = Serial.read();
-    //Serial.print("You wrote: ");
-    //Serial.write(incomingByte);
-    //Serial.print('\n');
     handleCommand(incomingByte);
   }
 
@@ -212,7 +213,5 @@ void loop() {
     }
 
     digitalWrite(ledPin, ledState);
-
-    //Serial.write("Still Alive\n");
   }
 }
