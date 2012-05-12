@@ -113,6 +113,7 @@ void handleCommand(int command) {
         commandState = HOUSE_CODE_STATE;
       }
       else if (command == CMD_HELP) {
+        Serial.println("Lightbot 5000 reporting for duty!");
         Serial.println("Current state: ");
         printCurrentState();
         Serial.print(CMD_SENSOR_QUERY);
@@ -188,7 +189,6 @@ void handleCommand(int command) {
 void setup() {
   pinMode(ledPin, OUTPUT);
   Serial.begin(9600);
-  Serial.println("Lightbot 5000 reporting for duty!");
 }
 
 void loop() {
@@ -198,7 +198,7 @@ void loop() {
   }
 
   if (myHouse.received()) {
-    myHouse.debug();
+    //myHouse.debug();
     myHouse.reset();
   }
 
