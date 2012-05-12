@@ -4,7 +4,6 @@ from bottle import route, run
 import serial
 from scheduler import Scheduler
 
-
 @route('/hello/:name')
 def index(name='World'):
     return '<b>Hello %s!</b>' % name

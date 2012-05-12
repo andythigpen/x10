@@ -18,6 +18,9 @@ def to_set(match):
 universal = UniversalMatch()
 
 class Event:
+    WEEKDAYS = range(0,5)   # monday-friday
+    WEEKEND = range(6,8)    # saturday-sunday
+
     def __init__(self, action, minute=universal, hour=universal, 
                        day=universal, month=universal, 
                        daysofweek=universal,
@@ -43,17 +46,24 @@ class Event:
 
 
 class Scheduler(threading.Thread):
+    _instance = None
+    def __new__(cls, *args, **kwargs):
+        if not cls._instance:
+            cls._instance = super(Scheduler, cls).__new__(cls, *args, **kwargs)
+        return cls._instance
+
     def __init__(self, *args, **kwargs):
         super(Scheduler, self).__init__(*args, **kwargs)
         self.running = True
         self.cond = threading.Condition()
         self.events = []
 
-    def register(self, event):
-        self.events.append(event)
+    def register(self, *args):
+        self.events.extend(args)
 
-    def unregister(self, event):
-        self.events.remove(event)
+    def unregister(self, *args):
+        for e in args:
+            self.events.remove(e)
 
     def run(self):
         t = datetime(*datetime.now().timetuple()[:5])
