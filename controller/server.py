@@ -3,17 +3,28 @@
 from bottle import route, run
 import serial
 from scheduler import Scheduler
+from log import get_log
 
-@route('/hello/:name')
-def index(name='World'):
-    return '<b>Hello %s!</b>' % name
+from events import normal
 
-s = Scheduler()
-s.start()
+# load all events...
+from events import *
 
-try:
-    run(host='', port=6060)
-except KeyboardInterrupt:
-    pass
+@route('/ambient/:enable')
+def index(enable=''):
+    if enable == 'enable':
+        normal.enable_ambient = True
+    elif enable == 'disable':
+        normal.enable_ambient = False
+    return '<b>%s</b>' % normal.enable_ambient
 
-s.stop()
+if __name__ == "__main__":
+    s = Scheduler()
+    log = get_log("main")
+    log.debug("s=%s id=%s" % (s,id(s)))
+    s.start()
+    try:
+        run(host='', port=6060)
+    except KeyboardInterrupt:
+        pass
+    s.stop()
