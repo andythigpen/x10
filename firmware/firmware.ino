@@ -1,10 +1,10 @@
 #include <x10.h>
 #include <x10constants.h>
 
+// X10 pin assignments
 #define ZC_PIN       2
-#define TRANS_PIN    4
-#define RECV_PIN     3
-#define REPEAT_TIMES 1
+#define TRANS_PIN    6
+#define RECV_PIN     4
 
 #define HOUSE_CODE_STATE 1
 #define UNIT_CODE_STATE  2
