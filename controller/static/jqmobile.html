@@ -2,11 +2,15 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0" />
     <title>
     </title>
     <link rel="stylesheet" href="http://code.jquery.com/mobile/1.1.0/jquery.mobile-1.1.0.min.css" />
     <link rel="stylesheet" href="my.css" />
+    <link rel="apple-touch-icon" href="mediaserver.png"/>
+    <link rel="apple-touch-startup-image" href="mediaserver_startup.png"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="apple-mobile-web-app-status-bar-style" content="black"/>
     <style>
       /* App custom styles */
       .ui-li .ui-btn-inner a.ui-link-inherit, .ui-li-static.ui-li {
@@ -44,40 +48,47 @@
     </script>
     <script src="http://code.jquery.com/mobile/1.1.0/jquery.mobile-1.1.0.min.js">
     </script>
+    <script src="jquery.actual.min.js" type="text/javascript" charset="utf-8"></script>
+    <!-- <script src="iscroll.js" type="text/javascript" charset="utf-8"></script> -->
+    <script src="iscroll-watusi.js" type="text/javascript" charset="utf-8"></script>
+    <script src="jquery.mobile.iscrollview.js" type="text/javascript" charset="utf-8"></script>
   </head>
   <body>
+
     <div data-role="page" id="lights" data-theme="c">
       <div data-role="header" data-position="fixed" data-id="page-header">
         <h3>MediaServer</h3>
       </div>
 
-      <div data-role="content">
-        <ul data-role="listview" data-inset="true">
-          <li data-role="fieldcontain">
-            <label for="light-switch">Lights</label>
-            <select id="light-switch" data-role="slider" name="xbmc-switch">
-              <option value="off">Off</option>
-              <option value="on">On</option>
+      <div data-role="content" data-iscroll>
+        <div style="padding-bottom:2.5em;">
+            
+          <ul data-role="listview" data-inset="true">
+            <li data-role="fieldcontain">
+              <label for="light-switch">Lights</label>
+              <select id="light-switch" data-role="slider" name="xbmc-switch">
+                <option value="off">Off</option>
+                <option value="on">On</option>
+              </select>
+            </li>              
+          </ul>
+
+          <div data-role="fieldcontain">
+            <fieldset data-role="controlgroup">
+              <label for="dimmer">Dimmer:</label>
+                <input type="range" name="dimmer" id="dimmer" value="0" min="0" max="24" step="2" data-highlight="false" />
+            </fieldset>
+          </div>
+
+          <div data-role="fieldcontain">
+            <label for="scene-menu">Scenes</label>
+            <select name="scene-menu" id="scene-menu">
+              <option value="4">Low</option>
+              <option value="12">Medium</option>
+              <option value="16">High</option>
             </select>
-          </li>              
-        </ul>
-
-        <div data-role="fieldcontain">
-          <fieldset data-role="controlgroup">
-            <label for="dimmer">Dimmer:</label>
-              <input type="range" name="dimmer" id="dimmer" value="0" min="0" max="24" step="2" data-highlight="false" />
-          </fieldset>
+          </div>
         </div>
-
-        <div data-role="fieldcontain">
-          <label for="scene-menu">Scenes</label>
-          <select name="scene-menu" id="scene-menu">
-            <option value="4">Low</option>
-            <option value="12">Medium</option>
-            <option value="16">High</option>
-          </select>
-        </div>
-
       </div>
 
       <div data-role="footer" class="nav-footer" data-position="fixed" data-id="page-footer">
@@ -103,36 +114,40 @@
       <div data-role="header" data-position="fixed" data-id="page-header">
         <h3>MediaServer</h3>
       </div>
-      <div data-role="content">
-        <ul data-role="listview" data-inset="true">
-          <li data-role="fieldcontain">
-            <label for="xbmc-switch">XBMC</label>
-            <select id="xbmc-switch" data-role="slider" name="xbmc-switch">
-              <option value="off">Off</option>
-              <option value="on">On</option>
-            </select>
-          </li>              
-        </ul>
-         
-        <div data-role="fieldcontain">
-          <div data-role="controlgroup">
-            <a href="#" data-role="button">Shutdown</a>
-            <a href="#" data-role="button">Restart</a>
-          </div>
 
-          <label for="when">When:</label>
-          <select name="when" id="when">
-            <option value="0">Now</option>
-            <option value="1">In 1 min</option>
-            <option value="5">In 5 min</option>
-            <option value="10">In 10 min</option>
-            <option value="30">In 30 min</option>
-            <option value="60">In 1 hour</option>
-            <option value="120">In 2 hours</option>
-            <option value="240">In 4 hours</option>
-          </select>
+      <div data-role="content" data-iscroll>
+        <div style="padding-bottom:2.5em;">
+          <ul data-role="listview" data-inset="true">
+            <li data-role="fieldcontain">
+              <label for="xbmc-switch">XBMC</label>
+              <select id="xbmc-switch" data-role="slider" name="xbmc-switch">
+                <option value="off">Off</option>
+                <option value="on">On</option>
+              </select>
+            </li>
+          </ul>
+           
+          <div data-role="fieldcontain">
+            <div data-role="controlgroup">
+              <a href="#" data-role="button">Shutdown</a>
+              <a href="#" data-role="button">Restart</a>
+            </div>
+
+            <label for="when">When:</label>
+            <select name="when" id="when">
+              <option value="0">Now</option>
+              <option value="1">In 1 min</option>
+              <option value="5">In 5 min</option>
+              <option value="10">In 10 min</option>
+              <option value="30">In 30 min</option>
+              <option value="60">In 1 hour</option>
+              <option value="120">In 2 hours</option>
+              <option value="240">In 4 hours</option>
+            </select>
+          </div>
         </div>
       </div>
+
       <div data-role="footer" class="nav-footer" data-position="fixed" data-id="page-footer">
         <div data-role="navbar" class="nav-footer" data-iconpos="top" >
           <ul>
@@ -150,5 +165,6 @@
         </div>
       </div>
     </div>
+      
   </body>
 </html>
