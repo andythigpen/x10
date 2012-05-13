@@ -42,6 +42,10 @@
         background: url(pp-icons/30-px/Tools.png) 50% 50% no-repeat;
         background-size: 24px 22px;
       }
+      #footer-settings .ui-icon {
+        background: url(pp-icons/30-px/Gear.png) 50% 50% no-repeat;
+        background-size: 24px 22px;
+      }
     </style>
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js">
     </script>
@@ -69,6 +73,8 @@ function loadStatus(data) {
     } else {
         $("#light-switch").val("off").slider('refresh');
     }
+    $("#sensor-value").html(data['sensor']);
+    $("#ambient-value").html(data['ambient'] ? "active" : "not active");
     // $("#dimmer").val(data['A1']).slider('refresh');
     if (updateUiTimer == null) {
         enableUiUpdate();
@@ -164,6 +170,11 @@ $(document).ready(function() {
               Programs
               </a>
             </li>
+            <li>
+              <a href="#settings" id="footer-settings" data-icon="custom">
+              Settings
+              </a>
+            </li>
           </ul>
         </div>
       </div>
@@ -221,10 +232,52 @@ $(document).ready(function() {
               Programs
               </a>
             </li>
+            <li>
+              <a href="#settings" id="footer-settings" data-icon="custom">
+              Settings
+              </a>
+            </li>
           </ul>
         </div>
       </div>
     </div>
+
+    <div data-role="page" id="settings" data-theme="c">
+      <div data-role="header" data-position="fixed" data-id="page-header">
+        <h3>Settings</h3>
+      </div>
       
+      <div data-role="content" data-iscroll>
+        <div style="padding-bottom:2.5em;">
+            <h3>Sensor value</h3>
+            <p id="sensor-value"></p>
+            <h3>Ambient value</h3>
+            <p id="ambient-value"></p>
+        </div>    
+      </div>
+
+      <div data-role="footer" class="nav-footer" data-position="fixed" data-id="page-footer">
+        <div data-role="navbar" class="nav-footer" data-iconpos="top" >
+          <ul>
+            <li>
+              <a href="#lights" id="footer-lights" data-icon="custom">
+                  Lights
+              </a>
+            </li>
+            <li>
+              <a href="#programs" id="footer-programs" data-icon="custom">
+              Programs
+              </a>
+            </li>
+            <li>
+              <a href="#settings" id="footer-settings" data-icon="custom" class="ui-btn-active ui-state-persist">
+              Settings
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
   </body>
 </html>
