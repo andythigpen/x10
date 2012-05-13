@@ -10,6 +10,8 @@ import programs
 # load all events...
 from events import *
 
+log = get_log("server")
+
 @route('/ambient<action:re:(/[^/]*){0,1}>')
 def index(action=''):
     if action == '/enable':
@@ -20,23 +22,26 @@ def index(action=''):
 
 @route('/lights', method=['GET','POST'])
 def lights():
-    if not request.json:        # GET
+    if not request.forms:        # GET
         return lightbot.status()
 
     # POST
-    obj = request.json
+    obj = request.forms
     func = getattr(lightbot, "lights_%s" % obj.get('action', ''), None)
     if func:
-        func(repeat=obj.get('repeat', 2))
+        if obj.get('arg', None):
+            func(obj.get('arg'))
+        else:
+            func()
         return lightbot.status()
     return {'error': "action '%s' not found" % obj.get('action', '')}
 
 @route('/programs', method=['GET','POST'])
 def progs():
-    if not request.json:        # GET
+    if not request.forms:        # GET
         return programs.status()
 
-    obj = request.json
+    obj = request.forms
     func = getattr(programs, "%s_%s" % (obj.get('action', ''), 
         obj.get('program', '')), None)
     if func:
@@ -57,7 +62,6 @@ def static(path):
 
 if __name__ == "__main__":
     s = Scheduler()
-    log = get_log("main")
     log.debug("s=%s id=%s" % (s,id(s)))
     s.start()
     try:

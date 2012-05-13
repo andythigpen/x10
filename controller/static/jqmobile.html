@@ -19,7 +19,6 @@
       }
       div.ui-slider-switch {
           position: absolute !important;
-          /* top: 3px !important; */
           right: 0 !important;
           margin-top: 4px;
           /* width: 44% !important; */
@@ -49,9 +48,69 @@
     <script src="http://code.jquery.com/mobile/1.1.0/jquery.mobile-1.1.0.min.js">
     </script>
     <script src="jquery.actual.min.js" type="text/javascript" charset="utf-8"></script>
-    <!-- <script src="iscroll.js" type="text/javascript" charset="utf-8"></script> -->
     <script src="iscroll-watusi.js" type="text/javascript" charset="utf-8"></script>
     <script src="jquery.mobile.iscrollview.js" type="text/javascript" charset="utf-8"></script>
+
+    <script type="text/javascript" charset="utf-8">
+var updateUiTimer = null;
+function enableUiUpdate() {
+    updateUiTimer = setInterval(function() {
+        $.getJSON('/lights', loadStatus);
+    }, 3000);
+}
+function disableUiUpdate() {
+    clearInterval(updateUiTimer);
+    updateUiTimer = null;
+}
+
+function loadStatus(data) {
+    if (data['A1'] > 0) {
+        $("#light-switch").val("on").slider('refresh');
+    } else {
+        $("#light-switch").val("off").slider('refresh');
+    }
+    // $("#dimmer").val(data['A1']).slider('refresh');
+    if (updateUiTimer == null) {
+        enableUiUpdate();
+    }
+}
+
+// var dimmerTimer = null;
+// function updateDimmer() {
+//     disableUiUpdate();
+//     $.post('/lights', {"action":"dimmer", "repeat":$("#dimmer").val()}, 
+//         function(data) {
+//             loadStatus(data);
+//             dimmerTimer = null;
+//     });
+// }
+
+$(document).ready(function() {
+    updateUiTimer = setInterval(function() {
+        $.getJSON('/lights', loadStatus);
+    }, 3000);
+
+    $("#light-switch").change(function() {
+        disableUiUpdate();
+        $.post('/lights', {"action": $(this).val()}, loadStatus);
+    });
+
+    $("#scene-menu").change(function() {
+        if ($(this).val() != "---") {
+            disableUiUpdate();
+            $.post('/lights', {"action": "scene", "arg":$(this).val()}, 
+                loadStatus);
+        }
+    });
+    // $("#dimmer").change(function() {
+    //     console.log($(this).val());
+    //     if (dimmerTimer != null) {
+    //         clearTimeout(dimmerTimer);
+    //     }
+    //     dimmerTimer = setTimeout(function() { updateDimmer(); }, 1000);
+    // });
+});
+    </script>
   </head>
   <body>
 
@@ -73,19 +132,20 @@
             </li>              
           </ul>
 
-          <div data-role="fieldcontain">
-            <fieldset data-role="controlgroup">
-              <label for="dimmer">Dimmer:</label>
-                <input type="range" name="dimmer" id="dimmer" value="0" min="0" max="24" step="2" data-highlight="false" />
-            </fieldset>
-          </div>
+          <!-- <div data-role="fieldcontain"> -->
+          <!--   <fieldset data-role="controlgroup"> -->
+          <!--     <label for="dimmer">Dimmer:</label> -->
+          <!--       <input type="range" name="dimmer" id="dimmer" value="0" min="0" max="24" step="2" data-highlight="false" /> -->
+          <!--   </fieldset> -->
+          <!-- </div> -->
 
           <div data-role="fieldcontain">
             <label for="scene-menu">Scenes</label>
             <select name="scene-menu" id="scene-menu">
-              <option value="4">Low</option>
-              <option value="12">Medium</option>
-              <option value="16">High</option>
+              <option value="-">---</option>
+              <option value="low">Low</option>
+              <option value="medium">Medium</option>
+              <option value="high">High</option>
             </select>
           </div>
         </div>
