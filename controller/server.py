@@ -4,6 +4,7 @@ from bottle import route, run
 import serial
 from scheduler import Scheduler
 from log import get_log
+import lightbot
 
 from events import normal
 
@@ -17,6 +18,14 @@ def index(enable=''):
     elif enable == 'disable':
         normal.enable_ambient = False
     return '<b>%s</b>' % normal.enable_ambient
+
+@route('/lights/<action>')
+def lights(action="none"):
+    func = getattr(lightbot, "lights_%s" % action, None)
+    if func:
+        func()
+        return lightbot.lights_status()
+    return "action '%s' not found" % action
 
 if __name__ == "__main__":
     s = Scheduler()
