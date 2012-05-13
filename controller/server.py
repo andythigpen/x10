@@ -1,31 +1,36 @@
 #!/usr/bin/env python
 
-from bottle import route, run
+from bottle import route, run, static_file
 import serial
 from scheduler import Scheduler
 from log import get_log
 import lightbot
 
-from events import normal
-
 # load all events...
 from events import *
 
-@route('/ambient/:enable')
-def index(enable=''):
-    if enable == 'enable':
-        normal.enable_ambient = True
-    elif enable == 'disable':
-        normal.enable_ambient = False
-    return '<b>%s</b>' % normal.enable_ambient
+@route('/ambient<action:re:(/[^/]*){0,1}>')
+def index(action=''):
+    if action == '/enable':
+        lightbot.AMBIENT = True
+    elif action == '/disable':
+        lightbot.AMBIENT = False
+    return '%s<b>%s</b>' % (action,lightbot.AMBIENT)
 
-@route('/lights/<action>')
+@route('/lights<action:re:(/[^/]*){0,1}>')
 def lights(action="none"):
+    action = action[1:]
+    if action == "":
+        action = "status"
     func = getattr(lightbot, "lights_%s" % action, None)
     if func:
         func()
         return lightbot.lights_status()
     return "action '%s' not found" % action
+
+@route('/static/<path:path>')
+def static(path):
+    return static_file(path, root='./static')
 
 if __name__ == "__main__":
     s = Scheduler()

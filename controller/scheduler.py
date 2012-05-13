@@ -100,7 +100,7 @@ class Scheduler:
         self.log.debug("Running scheduler...")
         t = datetime(*datetime.now().timetuple()[:5])
         while self.running:
-            self.log.debug("Events to check: %s" % self.events)
+            self.log.debug("Current time: %s" % datetime.now())
             for e in self.events:
                 self.log.debug("Checking event %s" % e)
                 try:

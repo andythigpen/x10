@@ -8,7 +8,6 @@ from datetime import datetime
 enabled = True
 # Arduino will return a result from 0-255, from experimentation 170 seems about 
 # the right level to start brightening the lights
-enable_ambient     = True
 low_ambient_level  = 170
 high_ambient_level = 190
 max_ambient_level  = 215
@@ -23,12 +22,12 @@ def turn_off_lights():
     lightbot.lights_off()
     
 def ambient_lights():
-    global enable_ambient, previous_value
+    global previous_value
     count = 0
     # brighten the lights, but give up after a few tries in case 
     # something has gone wrong
     value = lightbot.query_sensor()
-    if enable_ambient and \
+    if lightbot.AMBIENT and \
        value <= low_ambient_level and \
        previous_value <= low_ambient_level:
         while value and value < high_ambient_level and count < 10:
@@ -41,7 +40,7 @@ def ambient_lights():
         # don't increase brightness again until next time period
         # leave it scheduled so that if max_ambient_level is reached during 
         # this time, the lights will turn off
-        enable_ambient = False
+        lightbot.AMBIENT = False
 
     if value and value >= max_ambient_level and \
        previous_value >= max_ambient_level:
@@ -53,7 +52,7 @@ def ambient_lights():
 
 # re-enables the ambient lights for the next time
 def reenable_ambient_lights():
-    enable_ambient = True
+    lightbot.AMBIENT = True
 
 if enabled:
     s = Scheduler()
@@ -65,3 +64,4 @@ if enabled:
         Event(ambient_lights, hour=ambient_hours),
         Event(reenable_ambient_lights, hour=[9,21]),
     )
+

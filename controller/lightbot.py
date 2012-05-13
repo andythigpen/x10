@@ -15,6 +15,7 @@ for i in range(0,5):
         continue
 
 
+AMBIENT     = True
 LIVING_ROOM = 'A'
 LIGHTS      = '1'
 
@@ -84,7 +85,12 @@ def lights_bright(steps=4):
     return False
 
 def lights_status():
-    return lights
+    status = {}
+    sensor = query_sensor()
+    status.update(lights)
+    status['sensor'] = sensor
+    status['ambient'] = AMBIENT
+    return status
 
 def query_sensor():
     serial.write(QUERY_SENSOR)
