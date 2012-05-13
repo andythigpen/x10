@@ -1,7 +1,10 @@
 #!/usr/bin/env python
 
+import os
 import serial
-from bottle import request, route, run, static_file
+import bottle
+from bottle import request, route, static_file
+
 from scheduler import Scheduler
 from log import get_log
 import lightbot
@@ -58,14 +61,19 @@ def status():
 
 @route('/static/<path:path>')
 def static(path):
-    return static_file(path, root='./static')
+    d = os.path.realpath(os.path.dirname(__file__))
+    return static_file(path, root='%s/static' % d)
 
-if __name__ == "__main__":
+
+def run():
     s = Scheduler()
-    log.debug("s=%s id=%s" % (s,id(s)))
     s.start()
     try:
-        run(host='', port=6060)
+        bottle.run(host='', port=6060)
     except KeyboardInterrupt:
         pass
     s.stop()
+
+if __name__ == "__main__":
+    run()
+

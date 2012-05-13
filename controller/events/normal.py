@@ -27,6 +27,8 @@ def ambient_lights():
     # brighten the lights, but give up after a few tries in case 
     # something has gone wrong
     value = lightbot.query_sensor()
+    log.debug("ambient_lights enabled=%s current=%s prev=%s" % \
+            (lightbot.AMBIENT, value, previous_value))
     if lightbot.AMBIENT and \
        value <= low_ambient_level and \
        previous_value <= low_ambient_level:
