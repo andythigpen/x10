@@ -1,10 +1,11 @@
 #!/usr/bin/env python
 
-from bottle import route, run, static_file
 import serial
+from bottle import request, route, run, static_file
 from scheduler import Scheduler
 from log import get_log
 import lightbot
+import programs
 
 # load all events...
 from events import *
@@ -17,16 +18,38 @@ def index(action=''):
         lightbot.AMBIENT = False
     return '%s<b>%s</b>' % (action,lightbot.AMBIENT)
 
-@route('/lights<action:re:(/[^/]*){0,1}>')
-def lights(action="none"):
-    action = action[1:]
-    if action == "":
-        action = "status"
-    func = getattr(lightbot, "lights_%s" % action, None)
+@route('/lights', method=['GET','POST'])
+def lights():
+    if not request.json:        # GET
+        return lightbot.status()
+
+    # POST
+    obj = request.json
+    func = getattr(lightbot, "lights_%s" % obj.get('action', ''), None)
+    if func:
+        func(repeat=obj.get('repeat', 2))
+        return lightbot.status()
+    return {'error': "action '%s' not found" % obj.get('action', '')}
+
+@route('/programs', method=['GET','POST'])
+def progs():
+    if not request.json:        # GET
+        return programs.status()
+
+    obj = request.json
+    func = getattr(programs, "%s_%s" % (obj.get('action', ''), 
+        obj.get('program', '')), None)
     if func:
         func()
-        return lightbot.lights_status()
-    return "action '%s' not found" % action
+        return programs.status()
+    return {'error': "action '%s' not found" % obj.get('action','')}
+
+@route('/status')
+def status():
+    status = {}
+    status['lights'] = lightbot.status()
+    status['programs'] = programs.status()
+    return status
 
 @route('/static/<path:path>')
 def static(path):

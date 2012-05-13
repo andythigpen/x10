@@ -40,8 +40,8 @@ def x10(house, unit, repeat, action):
     '''X10 commands are prefixed with an x.'''
     return "x%s%s%s%s" % (house, unit, repeat, action)
 
-def lights_on():
-    serial.write(x10(LIVING_ROOM, LIGHTS, 2, X10_ON))
+def lights_on(repeat=2):
+    serial.write(x10(LIVING_ROOM, LIGHTS, repeat, X10_ON))
     result = serial.readline()
     log.debug("Serial response: %s" % result)
     if VALID_RESPONSE in result:
@@ -49,8 +49,8 @@ def lights_on():
         return True
     return False
 
-def lights_off():
-    serial.write(x10(LIVING_ROOM, LIGHTS, 2, X10_OFF))
+def lights_off(repeat=2):
+    serial.write(x10(LIVING_ROOM, LIGHTS, repeat, X10_OFF))
     result = serial.readline()
     log.debug("Serial response: %s" % result)
     if VALID_RESPONSE in result:
@@ -58,33 +58,33 @@ def lights_off():
         return True
     return False
 
-def lights_dim(steps=4):
+def lights_dim(repeat=4):
     if lights[LIVING_ROOM + LIGHTS] <= MIN_DIM:
         lights[LIVING_ROOM + LIGHTS] = MIN_DIM
         return True
 
-    serial.write(x10(LIVING_ROOM, LIGHTS, steps, X10_DIM))
+    serial.write(x10(LIVING_ROOM, LIGHTS, repeat, X10_DIM))
     result = serial.readline()
     log.debug("Serial response: %s" % result)
     if VALID_RESPONSE in result:
-        lights[LIVING_ROOM + LIGHTS] -= steps
+        lights[LIVING_ROOM + LIGHTS] -= repeat
         return True
     return False
 
-def lights_bright(steps=4):
+def lights_bright(repeat=4):
     if lights[LIVING_ROOM + LIGHTS] >= MAX_LEVEL:
         lights[LIVING_ROOM + LIGHTS] = MAX_LEVEL
         return True
 
-    serial.write(x10(LIVING_ROOM, LIGHTS, steps, X10_BRIGHT))
+    serial.write(x10(LIVING_ROOM, LIGHTS, repeat, X10_BRIGHT))
     result = serial.readline()
     log.debug("Serial response: %s" % result)
     if VALID_RESPONSE in result:
-        lights[LIVING_ROOM + LIGHTS] += steps
+        lights[LIVING_ROOM + LIGHTS] += repeat
         return True
     return False
 
-def lights_status():
+def status():
     status = {}
     sensor = query_sensor()
     status.update(lights)
