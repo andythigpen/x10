@@ -67,6 +67,8 @@ def run():
     s = Scheduler()
     s.start()
     try:
+        templates = "%s/views" % os.path.realpath(os.path.dirname(__file__))
+        bottle.TEMPLATE_PATH.insert(0, templates)
         bottle.run(host='', port=6060)
     except KeyboardInterrupt:
         pass
