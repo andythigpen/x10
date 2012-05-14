@@ -110,7 +110,7 @@ def lights_scene(scene="none"):
     try:
         target = scenes[scene]
     except KeyError:
-        self.log.exception()
+        log.exception()
         return False
 
     log.debug("Executing scene '%s'" % scene)

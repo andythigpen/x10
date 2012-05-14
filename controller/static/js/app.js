@@ -66,7 +66,7 @@ $(document).ready(function() {
     });
 
     $("#scene-menu").change(function() {
-        if ($(this).val() != "---") {
+        if ($(this).val() != "-") {
             disableUiUpdate();
             $.post('/lights', {"action": "scene", "arg":$(this).val()}, 
                 loadLightsStatus);
