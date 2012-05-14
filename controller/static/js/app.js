@@ -2,7 +2,7 @@
 var updateUiTimer = null;
 function enableUiUpdate() {
     updateUiTimer = setInterval(function() {
-        $.getJSON('/lights', loadStatus);
+        $.getJSON('/status', loadStatus);
     }, 3000);
 }
 
@@ -11,7 +11,7 @@ function disableUiUpdate() {
     updateUiTimer = null;
 }
 
-function loadStatus(data) {
+function loadLightsStatus(data) {
     if (data['A1'] > 0) {
         $("#light-switch").val("on").slider('refresh');
     } else {
@@ -23,57 +23,48 @@ function loadStatus(data) {
     if (data['ambient']) {
         $("#ambient-value").html(data['ambient'] ? "active" : "not active");
     }
-    // $("#dimmer").val(data['A1']).slider('refresh');
 
-    if (data['xbmc'] != null) {
-        $("#xbmc-switch").val(data['xbmc'] ? "start" : "stop").
-            slider('refresh');
-    }
     if (updateUiTimer == null) {
         enableUiUpdate();
     }
 }
 
-// var dimmerTimer = null;
-// function updateDimmer() {
-//     disableUiUpdate();
-//     $.post('/lights', {"action":"dimmer", "repeat":$("#dimmer").val()}, 
-//         function(data) {
-//             loadStatus(data);
-//             dimmerTimer = null;
-//     });
-// }
+function loadProgramsStatus(data) {
+    if (data['xbmc'] != null) {
+        $("#xbmc-switch").val(data['xbmc'] ? "start" : "stop").
+            slider('refresh');
+    }
+
+    if (updateUiTimer == null) {
+        enableUiUpdate();
+    }
+}
+
+function loadStatus(data) {
+    loadLightsStatus(data['lights']);
+    loadProgramsStatus(data['programs']);
+}
 
 $(document).ready(function() {
-    updateUiTimer = setInterval(function() {
-        $.getJSON('/lights', loadStatus);
-    }, 3000);
+    enableUiUpdate();
 
     $("#light-switch").change(function() {
         disableUiUpdate();
-        $.post('/lights', {"action": $(this).val()}, loadStatus);
+        $.post('/lights', {"action": $(this).val()}, loadLightsStatus);
     });
 
     $("#xbmc-switch").change(function() {
         disableUiUpdate();
         $.post('/programs', {"action": $(this).val(), "program":"xbmc"}, 
-            loadStatus);
+            loadProgramsStatus);
     });
 
     $("#scene-menu").change(function() {
         if ($(this).val() != "---") {
             disableUiUpdate();
             $.post('/lights', {"action": "scene", "arg":$(this).val()}, 
-                loadStatus);
+                loadLightsStatus);
         }
     });
-
-    // $("#dimmer").change(function() {
-    //     console.log($(this).val());
-    //     if (dimmerTimer != null) {
-    //         clearTimeout(dimmerTimer);
-    //     }
-    //     dimmerTimer = setTimeout(function() { updateDimmer(); }, 1000);
-    // });
 });
 
