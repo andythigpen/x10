@@ -3,7 +3,7 @@
 import os
 import serial
 import bottle
-from bottle import request, route, static_file
+from bottle import request, route, static_file, template
 
 from scheduler import Scheduler
 from log import get_log
@@ -15,13 +15,9 @@ from events import *
 
 log = get_log("server")
 
-@route('/ambient<action:re:(/[^/]*){0,1}>')
+@route('/')
 def index(action=''):
-    if action == '/enable':
-        lightbot.AMBIENT = True
-    elif action == '/disable':
-        lightbot.AMBIENT = False
-    return '%s<b>%s</b>' % (action,lightbot.AMBIENT)
+    return template('main')
 
 @route('/lights', method=['GET','POST'])
 def lights():

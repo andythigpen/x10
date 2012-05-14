@@ -1,0 +1,40 @@
+.text-align-center {
+  text-align: center;
+}
+.text-align-right {
+  text-align: right;
+}
+.ui-li .ui-btn-inner a.ui-link-inherit, .ui-li-static.ui-li {
+  display: block !important;
+  padding: 1.0em 75px 0.9em 15px !important;
+}
+div.ui-slider-switch {
+  position: absolute !important;
+  right: 0 !important;
+  margin-top: 4px;
+  /* width: 44% !important; */
+}
+.nav-footer .ui-btn .ui-btn-inner { padding-top: 40px !important; }
+.nav-footer .ui-btn .ui-icon { 
+  width: 30px !important; 
+  height: 30px !important; 
+  margin-left: -15px !important; 
+  box-shadow: none!important; 
+  -moz-box-shadow: none!important; 
+  -webkit-box-shadow: none!important; 
+  -webkit-border-radius: 0 !important; 
+  border-radius: 0 !important; 
+}
+#footer-lights .ui-icon {
+  background: url(/static/pp-icons/30-px/Brightness.png) 50% 50% no-repeat;
+  background-size: 24px 22px;
+}
+#footer-programs .ui-icon {
+  background: url(/static/pp-icons/30-px/Tools.png) 50% 50% no-repeat;
+  background-size: 24px 22px;
+}
+#footer-settings .ui-icon {
+  background: url(/static/pp-icons/30-px/Gear.png) 50% 50% no-repeat;
+  background-size: 24px 22px;
+}
+
