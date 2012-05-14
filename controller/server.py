@@ -28,9 +28,11 @@ def lights():
     obj = request.forms
     func = getattr(lightbot, "lights_%s" % obj.get('action', ''), None)
     if func:
-        if obj.get('arg', None):
+        if not obj.get('arg', None) is None:
+            log.debug("calling %s with %s" % (func, obj.get('arg')))
             func(obj.get('arg'))
         else:
+            log.debug("calling %s" % (func))
             func()
         return lightbot.status()
     return {'error': "action '%s' not found" % obj.get('action', '')}

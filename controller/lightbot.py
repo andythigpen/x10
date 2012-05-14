@@ -149,6 +149,13 @@ def lights_scene(scene="none"):
     log.debug("finish level:%s target:%s" % (val, target))
     return True
 
+def lights_set_ambient(enable=True):
+    global AMBIENT
+    if type(enable) == str:
+        enable = str(enable).lower() == "true"
+    AMBIENT = enable
+    log.debug("set_ambient ambient=%s %s" % (AMBIENT, type(AMBIENT)))
+    return True
 
 def status():
     status = {}
