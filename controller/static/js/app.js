@@ -17,12 +17,8 @@ function loadLightsStatus(data) {
     } else {
         $("#light-switch").val("off").slider('refresh');
     }
-    if (data['sensor']) {
-        $("#sensor-value").html(data['sensor']);
-    }
-    if (data['ambient']) {
-        $("#ambient-value").html(data['ambient'] ? "active" : "not active");
-    }
+    $("#sensor-value").html(data['sensor']);
+    $("#ambient-value").html(data['ambient'] ? "active" : "not active");
 
     if (updateUiTimer == null) {
         enableUiUpdate();
@@ -51,6 +47,16 @@ $(document).ready(function() {
     $("#light-switch").change(function() {
         disableUiUpdate();
         $.post('/lights', {"action": $(this).val()}, loadLightsStatus);
+    });
+
+    $("#bright-btn").click(function() {
+        disableUiUpdate();
+        $.post('/lights', {"action": "bright"}, loadLightsStatus);
+    });
+
+    $("#dim-btn").click(function() {
+        disableUiUpdate();
+        $.post('/lights', {"action": "dim"}, loadLightsStatus);
     });
 
     $("#xbmc-switch").change(function() {

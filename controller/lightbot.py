@@ -33,9 +33,9 @@ lights = {}
 lights[LIVING_ROOM+LIGHTS] = 0
 
 scenes = {
-    "low": 6,
-    "medium": 10,
-    "high": 18,
+    "low"    : 100,
+    "medium" : 140,
+    "high"   : 190,
 }
 
 MIN_LEVEL = 0
@@ -78,7 +78,7 @@ def lights_dim(repeat=4):
     log.debug("dim repeat=%s" % repeat)
     if lights[LIVING_ROOM + LIGHTS] <= MIN_DIM:
         lights[LIVING_ROOM + LIGHTS] = MIN_DIM
-        return True
+        # return True
 
     serial_lock.acquire()
     serial.write(x10(LIVING_ROOM, LIGHTS, repeat, X10_DIM))
@@ -94,7 +94,7 @@ def lights_bright(repeat=4):
     log.debug("bright repeat=%s" % repeat)
     if lights[LIVING_ROOM + LIGHTS] >= MAX_LEVEL:
         lights[LIVING_ROOM + LIGHTS] = MAX_LEVEL
-        return True
+        # return True
 
     serial_lock.acquire()
     serial.write(x10(LIVING_ROOM, LIGHTS, repeat, X10_BRIGHT))
@@ -114,23 +114,39 @@ def lights_scene(scene="none"):
         return False
 
     log.debug("Executing scene '%s'" % scene)
-    log.debug("Current level:%s target:%s" % (lights[LIVING_ROOM+LIGHTS],target))
-    while lights[LIVING_ROOM + LIGHTS] > target:
-        repeat = lights[LIVING_ROOM + LIGHTS] - target
-        if repeat > 8:
-            repeat = 8 
-        lights_dim(repeat)
-        log.debug("dim level:%s target:%s" % (lights[LIVING_ROOM+LIGHTS],target))
+    count = 10
+    val = query_sensor() 
+    log.debug("Current level:%s target:%s" % (val,target))
+    if val > target:
+        while val > target and count > 0:
+            diff = val - target
+            repeat = 2
+            if diff > 70:
+                repeat = 8
+            elif diff > 30:
+                repeat = 4
+            lights_dim(repeat)
+            val = query_sensor()
+            count -= 1
+            log.debug("dim level:%s target:%s" % (val, target))
 
-    log.debug("Current level:%s target:%s" % (lights[LIVING_ROOM+LIGHTS],target))
-    while lights[LIVING_ROOM + LIGHTS] < target:
-        repeat = target - lights[LIVING_ROOM + LIGHTS]
-        if repeat > 8:
-            repeat = 8 
+        log.debug("Current level:%s target:%s" % (val, target))
+        return True
+
+    while val < target and count > 0:
+        diff = target - val
+        repeat = 2
+        if diff > 50:
+            repeat = 8
+        elif diff > 20:
+            repeat = 4
+
         lights_bright(repeat)
-        log.debug("bright level:%s target:%s" % (lights[LIVING_ROOM+LIGHTS],target))
+        val = query_sensor()
+        count -= 1
+        log.debug("bright level:%s target:%s" % (val, target))
 
-    log.debug("finish level:%s target:%s" % (lights[LIVING_ROOM+LIGHTS],target))
+    log.debug("finish level:%s target:%s" % (val, target))
     return True
 
 

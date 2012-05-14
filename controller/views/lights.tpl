@@ -23,6 +23,13 @@ selected
           </select>
         </li>
       </ul>
+      
+      <div data-role="fieldcontain">
+        <div data-role="controlgroup">
+          <a href="#" id="bright-btn" data-role="button" data-icon="arrow-u">Brighten</a>
+          <a href="#" id="dim-btn" data-role="button" data-icon="arrow-d">Dim</a>
+        </div>
+      </div>
 
       <!-- <div data-role="fieldcontain"> -->
       <!--   <fieldset data-role="controlgroup"> -->
@@ -32,7 +39,7 @@ selected
       <!-- </div> -->
 
       <div data-role="fieldcontain">
-        <label for="scene-menu">Scenes</label>
+        <label for="scene-menu">Ambient (night)</label>
         <select name="scene-menu" id="scene-menu">
           <option value="-">---</option>
           <option value="low">Low</option>
