@@ -17,9 +17,9 @@
     </script>
     <script src="http://code.jquery.com/mobile/1.1.0/jquery.mobile-1.1.0.min.js">
     </script>
-    <script src="/static/jquery.actual.min.js" type="text/javascript" charset="utf-8"></script>
-    <script src="/static/iscroll-watusi.js" type="text/javascript" charset="utf-8"></script>
-    <script src="/static/jquery.mobile.iscrollview.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/static/js/jquery.actual.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/static/js/iscroll-watusi.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/static/js/jquery.mobile.iscrollview.js" type="text/javascript" charset="utf-8"></script>
 
     <script src="/static/js/app.js" type="text/javascript" charset="utf-8"></script>
   </head>
