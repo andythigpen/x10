@@ -4,13 +4,17 @@ from log import get_log
 from scheduler import Scheduler,Event
 from x10commands import *
 from datetime import datetime
+from config import get_config
 
 enabled = True
+cfg = get_config()
+
 # Arduino will return a result from 0-255, from experimentation 170 seems about 
 # the right level to start brightening the lights
-low_ambient_level  = 170
-high_ambient_level = 190
-max_ambient_level  = 215
+ambient_enabled    = cfg.getboolean('ambient', 'enabled')
+low_ambient_level  = cfg.getint('ambient', 'low')
+high_ambient_level = cfg.getint('ambient', 'high')
+max_ambient_level  = cfg.getint('ambient', 'max')
 previous_value     = 255
 
 log = get_log('normal')
@@ -22,6 +26,9 @@ def turn_off_lights():
 def ambient_lights():
     global previous_value
     count = 0
+    if not ambient_enabled:
+        return
+
     # brighten the lights, but give up after a few tries in case 
     # something has gone wrong
     value = lightbot.query_sensor()
@@ -66,4 +73,7 @@ if enabled:
         Event(ambient_lights, hour=ambient_hours),
         Event(reenable_ambient_lights, hour=[7,16]),
     )
+
+#TODO use load/unload functions so that different schedulers can be 
+# loaded/unloaded during runtime
 

@@ -1,4 +1,7 @@
 %import lightbot
+%import config
+
+%cfg = config.get_config()
 
 <div data-role="page" id="lights" data-theme="c">
 %include header
@@ -42,9 +45,12 @@ selected
         <label for="scene-menu">Ambient (night)</label>
         <select name="scene-menu" id="scene-menu">
           <option value="-">---</option>
-          <option value="low">Low</option>
+%for scene,value in cfg.items('scenes'):
+<option value="{{ scene }}">{{ scene.capitalize() }}</option>
+%end
+          <!--<option value="low">Low</option>
           <option value="medium">Medium</option>
-          <option value="high">High</option>
+          <option value="high">High</option>-->
         </select>
       </div>
     </div>

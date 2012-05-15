@@ -1,8 +1,11 @@
+import os
 import threading
 from serial import Serial,SerialException
 from log import get_log
+from config import get_config
 
-log = get_log('lightbot')
+log = get_log("lightbot")
+cfg = get_config()
 
 serial = None
 for i in range(0,5):
@@ -21,8 +24,8 @@ serial_lock = threading.Lock()
 # 1 - Is the current time in an ambient range?
 # 2 - Has the ambient event detection already been triggered?
 AMBIENT     = True
-LIVING_ROOM = 'A'
-LIGHTS      = '1'
+LIVING_ROOM = cfg.get('living_room', 'house')
+LIGHTS      = cfg.get('living_room', 'unit')
 
 X10_ON     = '|'
 X10_OFF    = 'O'
@@ -35,15 +38,17 @@ lights = {}
 # defaults
 lights[LIVING_ROOM+LIGHTS] = 0
 
-scenes = {
-    "low"    : 100,
-    "medium" : 140,
-    "high"   : 190,
-}
+scenes = {}
+for scene,value in cfg.items('scenes'):
+    try:
+        scenes[scene] = int(value)
+    except:
+        log.exception()
 
-MIN_LEVEL = 0
-MIN_DIM   = 4
-MAX_LEVEL = 24
+
+MIN_LEVEL = cfg.getint('levels', 'min')
+MIN_DIM   = cfg.getint('levels', 'min_dim')
+MAX_LEVEL = cfg.getint('levels', 'max')
 
 VALID_RESPONSE = "Sent X10 command"
 
