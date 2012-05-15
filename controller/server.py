@@ -27,15 +27,16 @@ def lights():
     # POST
     obj = request.forms
     func = getattr(lightbot, "lights_%s" % obj.get('action', ''), None)
-    if func:
-        if not obj.get('arg', None) is None:
-            log.debug("calling %s with %s" % (func, obj.get('arg')))
-            func(obj.get('arg'))
-        else:
-            log.debug("calling %s" % (func))
-            func()
-        return lightbot.status()
-    return {'error': "action '%s' not found" % obj.get('action', '')}
+    if not func:
+        log.debug("action '%s' not found" % obj.get('action', ''))
+        return {'error': "action '%s' not found" % obj.get('action', '')}
+    if not obj.get('arg', None) is None:
+        log.debug("calling %s with %s" % (func, obj.get('arg')))
+        func(obj.get('arg'))
+    else:
+        log.debug("calling %s" % (func))
+        func()
+    return lightbot.status()
 
 @route('/programs', method=['GET','POST'])
 def progs():
@@ -45,10 +46,16 @@ def progs():
     obj = request.forms
     func = getattr(programs, "%s_%s" % (obj.get('action', ''), 
         obj.get('program', '')), None)
-    if func:
+    if not func:
+        log.debug("action '%s' not found" % obj.get('action', ''))
+        return {'error': "action '%s' not found" % obj.get('action','')}
+    if not obj.get('arg', None) is None:
+        log.debug("calling %s with %s" % (func, obj.get('arg')))
+        func(obj.get('arg'))
+    else:
+        log.debug("calling %s" % (func))
         func()
-        return programs.status()
-    return {'error': "action '%s' not found" % obj.get('action','')}
+    return programs.status()
 
 @route('/status')
 def status():

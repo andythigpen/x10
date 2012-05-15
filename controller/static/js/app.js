@@ -41,6 +41,15 @@ function loadProgramsStatus(data) {
         } catch (e) {
         }
     }
+    if (data['power'] != null) {
+        $("#power-status").html(data['power']);
+        if (data['power'] != '') {
+            $("#cancel-power-btn").show();
+        }
+        else {
+            $("#cancel-power-btn").hide();
+        }
+    }
 
     if (updateUiTimer == null) {
         enableUiUpdate();
@@ -83,6 +92,37 @@ $(document).ready(function() {
     $("#xbmc-switch").change(function() {
         disableUiUpdate();
         $.post('/programs', {"action": $(this).val(), "program":"xbmc"}, 
+            loadProgramsStatus);
+    });
+
+    $("#shutdown-btn").click(function() {
+        disableUiUpdate();
+        var when = $("#when").val();
+        if (when == "0" && 
+            ! confirm("Are you sure you want to shutdown now?")) {
+            return;
+        }
+        $.post('/programs', {"action":"shutdown", "program":"pc", "arg":when}, 
+            loadProgramsStatus);
+    });
+
+    $("#restart-btn").click(function() {
+        disableUiUpdate();
+        var when = $("#when").val();
+        if (when == "0" && 
+            ! confirm("Are you sure you want to shutdown now?")) {
+            return;
+        }
+        $.post('/programs', {"action":"reboot", "program":"pc", "arg":when}, 
+            loadProgramsStatus);
+    });
+
+    $("#cancel-power-btn").click(function() {
+        disableUiUpdate();
+        if (! confirm("Cancel event?")) {
+            return;
+        }
+        $.post('/programs', {"action":"clear", "program":"power"},
             loadProgramsStatus);
     });
 

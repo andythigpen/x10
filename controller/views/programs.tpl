@@ -25,8 +25,8 @@ selected
 
       <div data-role="fieldcontain">
         <div data-role="controlgroup">
-          <a href="#" data-role="button">Shutdown</a>
-          <a href="#" data-role="button">Restart</a>
+          <a href="#" id="shutdown-btn" data-role="button">Shutdown</a>
+          <a href="#" id="restart-btn" data-role="button">Restart</a>
         </div>
 
         <label for="when">When:</label>
@@ -40,7 +40,10 @@ selected
           <option value="120">In 2 hours</option>
           <option value="240">In 4 hours</option>
         </select>
+        <p id="power-status"></p>
+        <a href="#" id="cancel-power-btn" data-role="button" style="display:none;">Cancel</a>
       </div>
+      <br /><br /><br /><br /><br />
     </div>
   </div>
 

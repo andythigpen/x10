@@ -12,8 +12,6 @@ low_ambient_level  = 170
 high_ambient_level = 190
 max_ambient_level  = 215
 previous_value     = 255
-# only perform ambient lighting from 7-8am, 4-8pm
-ambient_hours = range(7,9) + range(16, 21)
 
 log = get_log('normal')
 
@@ -58,12 +56,14 @@ def reenable_ambient_lights():
 
 if enabled:
     s = Scheduler()
+    # only perform ambient lighting from 7-8am, 4-8pm
+    ambient_hours = range(7,9) + range(16, 21)
     s.register(
         Event(turn_off_lights, minute=0, hour=23, daysofweek=Event.WEEKDAYS),
         Event(turn_off_lights, minute=0, hour=1, daysofweek=Event.WEEKEND),
         # turn off lights at 8:30am in case of ambient lighting on weekdays
         Event(turn_off_lights, minute=30, hour=8, daysofweek=Event.WEEKDAYS),
         Event(ambient_lights, hour=ambient_hours),
-        Event(reenable_ambient_lights, hour=[9,21]),
+        Event(reenable_ambient_lights, hour=[7,16]),
     )
 
