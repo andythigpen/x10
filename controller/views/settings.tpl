@@ -29,12 +29,6 @@ selected
           </select>
 
         </li>
-        </li>
-      </ul>
-
-      <h4>Ambient Levels</h4>
-      <div data-role="controlgroup">
-      <ul data-role="listview" data-inset="true">
         <li data-role="fieldcontain" class="ui-grid-a">
           <label for="low-light-txt" class="ui-block-a">Low</label>
           <input class="ui-block-b" type="text" name="low-light-txt" id="low-light-txt" value="{{ cfg.get('ambient', 'low') }}" />
@@ -52,7 +46,6 @@ selected
         </li>
       </ul>
       <a href="#" data-role="button" id="save-ambient-levels-btn">Save</a>
-      </div>
 
       <h3>Sensor value</h3>
       <p id="sensor-value">{{lightbot.query_sensor()}}</p>
