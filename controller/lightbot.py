@@ -2,10 +2,10 @@ import os
 import threading
 from serial import Serial,SerialException
 from log import get_log
-from config import get_config
+import config
 
 log = get_log("lightbot")
-cfg = get_config()
+cfg = config.get_config()
 
 serial = None
 for i in range(0,5):
@@ -157,12 +157,24 @@ def lights_scene(scene="none"):
     log.debug("finish level:%s target:%s" % (val, target))
     return True
 
-def lights_set_ambient(enable=True):
+def lights_set_ambient_active(active=True):
     global AMBIENT
-    if type(enable) == str:
-        enable = str(enable).lower() == "true"
-    AMBIENT = enable
-    log.debug("set_ambient ambient=%s %s" % (AMBIENT, type(AMBIENT)))
+    if type(active) == str:
+        active = active.lower() == "true"
+    AMBIENT = active
+    log.debug("set_ambient_active ambient=%s %s" % (AMBIENT, type(AMBIENT)))
+    return True
+
+def lights_set_ambient(enable=True):
+    cfg.set('ambient', 'enabled', enable)
+    cfg.save()
+    return True
+
+def lights_save_ambient_levels(low=0, high=0, maximum=0):
+    cfg.set('ambient', 'low', low)
+    cfg.set('ambient', 'high', high)
+    cfg.set('ambient', 'max', maximum)
+    cfg.save()
     return True
 
 def status():

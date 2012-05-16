@@ -1,3 +1,4 @@
+%import time
 <!DOCTYPE html>
 <html>
   <head>
@@ -6,7 +7,7 @@
     <title>
     </title>
     <link rel="stylesheet" href="http://code.jquery.com/mobile/1.1.0/jquery.mobile-1.1.0.min.css" />
-    <link rel="stylesheet" href="/static/css/app.css" />
+    <link rel="stylesheet" href="/static/css/app.css?{{ time.time() }}" />
 
     <link rel="apple-touch-icon" href="/static/mediaserver.png"/>
     <link rel="apple-touch-startup-image" href="/static/mediaserver_startup.png"/>
@@ -21,7 +22,7 @@
     <script src="/static/js/iscroll-watusi.js" type="text/javascript" charset="utf-8"></script>
     <script src="/static/js/jquery.mobile.iscrollview.js" type="text/javascript" charset="utf-8"></script>
 
-    <script src="/static/js/app.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/static/js/app.js?{{ time.time() }}" type="text/javascript" charset="utf-8"></script>
   </head>
   <body>
     %include

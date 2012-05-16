@@ -83,7 +83,7 @@ $(document).ready(function() {
     $("#scene-menu").change(function() {
         if ($(this).val() != "-") {
             disableUiUpdate();
-            $.post('/lights', {"action": "scene", "arg":$(this).val()}, 
+            $.post('/lights', {"action": "scene", "scene":$(this).val()}, 
                 loadLightsStatus);
         }
     });
@@ -102,7 +102,7 @@ $(document).ready(function() {
             ! confirm("Are you sure you want to shutdown now?")) {
             return;
         }
-        $.post('/programs', {"action":"shutdown", "program":"pc", "arg":when}, 
+        $.post('/programs', {"action":"shutdown", "program":"pc", "when":when}, 
             loadProgramsStatus);
     });
 
@@ -110,10 +110,10 @@ $(document).ready(function() {
         disableUiUpdate();
         var when = $("#when").val();
         if (when == "0" && 
-            ! confirm("Are you sure you want to shutdown now?")) {
+            ! confirm("Are you sure you want to restart now?")) {
             return;
         }
-        $.post('/programs', {"action":"reboot", "program":"pc", "arg":when}, 
+        $.post('/programs', {"action":"restart", "program":"pc", "when":when}, 
             loadProgramsStatus);
     });
 
@@ -129,9 +129,29 @@ $(document).ready(function() {
     /** Settings */
     $("#ambient-switch").change(function() {
         disableUiUpdate();
-        var enabled = $(this).val() == "on";
-        $.post('/lights', {"action": "set_ambient", "arg": enabled}, 
+        var active = $(this).val() == "on";
+        $.post('/lights', {"action": "set_ambient_active", "active": active}, 
             loadLightsStatus);
+    });
+
+    $("#ambient-enable-switch").change(function() {
+        disableUiUpdate();
+        var enabled = $(this).val() == "on";
+        $.post('/lights', {"action": "set_ambient", "enable": enabled}, 
+            loadLightsStatus);
+    });
+
+    $("#save-ambient-levels-btn").click(function() {
+        disableUiUpdate();
+        $.post('/lights', {
+            "action"  : "save_ambient_levels", 
+            "low"     : $("#low-light-txt").val(),
+            "high"    : $("#high-light-txt").val(),
+            "maximum" : $("#max-light-txt").val()
+        }, function(data) {
+            alert("Saved settings successfully.");
+            loadLightsStatus(data);
+        });
     });
 });
 

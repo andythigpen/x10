@@ -80,9 +80,9 @@ def shutdown_pc(when='0'):
 
     return False
 
-def reboot_pc(when='now'):
+def restart_pc(when='now'):
     clear_power()
-    log.debug("reboot_pc when=%s" % when)
+    log.debug("restart_pc when=%s" % when)
     s = subprocess.Popen(["at", "now", "+", when, "minutes"],
             stdin=subprocess.PIPE, stdout=subprocess.PIPE, 
             stderr=subprocess.STDOUT)
@@ -114,6 +114,7 @@ def power_status():
     s = subprocess.Popen(["at", "-c", job.strip()], stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT)
     (out, err) = s.communicate()
+    #TODO clear out the JOB_FILE if the job doesn't exist anymore
     for line in out.splitlines():
         match = re.match(r'sudo shutdown -(h|r){1}', line)
         if match:

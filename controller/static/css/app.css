@@ -17,6 +17,12 @@ div.ui-slider-switch {
   margin-top: 4px;
   /* width: 44% !important; */
 }
+li.ui-field-contain input[type=text] {
+  position: absolute !important;
+  right: 10px !important;
+  width: 80px !important;
+  margin-top: -6px !important;
+}
 .nav-footer .ui-btn .ui-btn-inner { padding-top: 40px !important; }
 .nav-footer .ui-btn .ui-icon { 
   width: 30px !important; 

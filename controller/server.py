@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import os
+import inspect
 import serial
 import bottle
 from bottle import request, route, static_file, template
@@ -30,12 +31,16 @@ def lights():
     if not func:
         log.debug("action '%s' not found" % obj.get('action', ''))
         return {'error': "action '%s' not found" % obj.get('action', '')}
-    if not obj.get('arg', None) is None:
-        log.debug("calling %s with %s" % (func, obj.get('arg')))
-        func(obj.get('arg'))
-    else:
-        log.debug("calling %s" % (func))
-        func()
+
+    # only keyword arguments allowed
+    kwargs = {}
+    spec = inspect.getargspec(func)
+    for variable in spec.args:
+        value = obj.get(variable, None)
+        if not value is None:
+            kwargs[variable] = value
+
+    func(**kwargs)
     return lightbot.status()
 
 @route('/programs', method=['GET','POST'])
@@ -49,12 +54,16 @@ def progs():
     if not func:
         log.debug("action '%s' not found" % obj.get('action', ''))
         return {'error': "action '%s' not found" % obj.get('action','')}
-    if not obj.get('arg', None) is None:
-        log.debug("calling %s with %s" % (func, obj.get('arg')))
-        func(obj.get('arg'))
-    else:
-        log.debug("calling %s" % (func))
-        func()
+
+    # only keyword arguments allowed
+    kwargs = {}
+    spec = inspect.getargspec(func)
+    for variable in spec.args:
+        value = obj.get(variable, None)
+        if not value is None:
+            kwargs[variable] = value
+
+    func(**kwargs)
     return programs.status()
 
 @route('/status')
@@ -76,7 +85,8 @@ def run():
     try:
         templates = "%s/views" % os.path.realpath(os.path.dirname(__file__))
         bottle.TEMPLATE_PATH.insert(0, templates)
-        bottle.run(host='', port=6060)
+        # bottle.debug(True)
+        bottle.run(host='', port=6060) #, reloader=True)
     except KeyboardInterrupt:
         pass
     s.stop()

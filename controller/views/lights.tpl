@@ -4,7 +4,7 @@
 %cfg = config.get_config()
 
 <div data-role="page" id="lights" data-theme="c">
-%include header
+%include header title="Lights"
 
   <div data-role="content" data-iscroll>
     <div style="padding-bottom:2.5em;">
@@ -20,6 +20,21 @@ selected
             >Off</option>
             <option value="on"
 %if lightbot.status()[lightbot.LIVING_ROOM+lightbot.LIGHTS] > 0:
+selected
+%end
+            >On</option>
+          </select>
+        </li>
+        <li data-role="fieldcontain">
+          <label for="ambient-switch">Sensor Active</label>
+          <select id="ambient-switch" data-role="slider" name="ambient-switch">
+            <option value="off"
+%if not lightbot.AMBIENT:
+selected
+%end
+            >Off</option>
+            <option value="on"
+%if lightbot.AMBIENT:
 selected
 %end
             >On</option>

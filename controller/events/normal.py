@@ -9,12 +9,6 @@ from config import get_config
 enabled = True
 cfg = get_config()
 
-# Arduino will return a result from 0-255, from experimentation 170 seems about 
-# the right level to start brightening the lights
-ambient_enabled    = cfg.getboolean('ambient', 'enabled')
-low_ambient_level  = cfg.getint('ambient', 'low')
-high_ambient_level = cfg.getint('ambient', 'high')
-max_ambient_level  = cfg.getint('ambient', 'max')
 previous_value     = 255
 
 log = get_log('normal')
@@ -26,17 +20,22 @@ def turn_off_lights():
 def ambient_lights():
     global previous_value
     count = 0
-    if not ambient_enabled:
+    if not cfg.getboolean('ambient', 'enabled'):
+        log.debug("ambient not enabled...skipping.")
         return
 
-    # brighten the lights, but give up after a few tries in case 
-    # something has gone wrong
+    low_ambient_level  = cfg.getint('ambient', 'low')
+    high_ambient_level = cfg.getint('ambient', 'high')
+    max_ambient_level  = cfg.getint('ambient', 'max')
+
     value = lightbot.query_sensor()
     log.debug("ambient_lights enabled=%s current=%s prev=%s" % \
             (lightbot.AMBIENT, value, previous_value))
     if lightbot.AMBIENT and \
        value <= low_ambient_level and \
        previous_value <= low_ambient_level:
+        # brighten the lights, but give up after a few tries in case 
+        # something has gone wrong
         while value and value < high_ambient_level and count < 10:
             log.debug("Increasing brightness.") 
             lightbot.lights_bright()

@@ -1,7 +1,7 @@
 %import programs
 
 <div data-role="page" id="programs" data-theme="c">
-%include header
+%include header title="Programs"
 
   <div data-role="content" data-iscroll>
     <div style="padding-bottom:2.5em;">
