@@ -84,7 +84,10 @@ $(document).ready(function() {
         if ($(this).val() != "-") {
             disableUiUpdate();
             $.post('/lights', {"action": "scene", "scene":$(this).val()}, 
-                loadLightsStatus);
+                function(data) {
+                    $("#scene-menu").val("-").selectmenu('refresh');
+                    loadLightsStatus(data);
+            });
         }
     });
 
