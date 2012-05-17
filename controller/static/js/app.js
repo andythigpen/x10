@@ -149,7 +149,6 @@ $(document).ready(function() {
         $.post('/lights', {
             "action"  : "save_ambient_levels", 
             "low"     : $("#low-light-txt").val(),
-            "high"    : $("#high-light-txt").val(),
             "maximum" : $("#max-light-txt").val()
         }, function(data) {
             alert("Saved settings successfully.");

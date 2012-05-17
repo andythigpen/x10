@@ -114,7 +114,6 @@ def power_status():
     s = subprocess.Popen(["at", "-c", job.strip()], stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT)
     (out, err) = s.communicate()
-    #TODO clear out the JOB_FILE if the job doesn't exist anymore
     for line in out.splitlines():
         match = re.match(r'sudo shutdown -(h|r){1}', line)
         if match:
@@ -123,6 +122,12 @@ def power_status():
             elif match.group(1) == "r":
                 action = "Restart"
             break
+        # clear out the JOB_FILE if the job doesn't exist anymore
+        match = re.match(r'Cannot find job', line)
+        if match:
+            log.debug("Job not found")
+            clear_power()
+
     s = subprocess.Popen(["atq"], stdout=subprocess.PIPE, 
             stderr=subprocess.STDOUT)
     (out, err) = s.communicate()

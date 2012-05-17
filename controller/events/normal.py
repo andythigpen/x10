@@ -6,16 +6,15 @@ from x10commands import *
 from datetime import datetime
 from config import get_config
 
-enabled = True
 cfg = get_config()
-
-previous_value     = 255
-
 log = get_log('normal')
 
-def turn_off_lights():
+previous_value = 255
+
+def turn_off_lights(disable_ambient=True):
     log.debug("Turning off lights") 
     lightbot.lights_off()
+    lightbot.AMBIENT = not disable_ambient
     
 def ambient_lights():
     global previous_value
@@ -25,7 +24,6 @@ def ambient_lights():
         return
 
     low_ambient_level  = cfg.getint('ambient', 'low')
-    high_ambient_level = cfg.getint('ambient', 'high')
     max_ambient_level  = cfg.getint('ambient', 'max')
 
     value = lightbot.query_sensor()
@@ -36,17 +34,18 @@ def ambient_lights():
        previous_value <= low_ambient_level:
         # brighten the lights, but give up after a few tries in case 
         # something has gone wrong
-        while value and value < high_ambient_level and count < 10:
+        while value and value < low_ambient_level and count < 20:
             log.debug("Increasing brightness.") 
-            lightbot.lights_bright()
+            lightbot.lights_bright(repeat=2)
             count += 1
             value = lightbot.query_sensor()
             time.sleep(0.2)
-        # we detected an an ambient light event for this time period...
-        # don't increase brightness again until next time period
-        # leave it scheduled so that if max_ambient_level is reached during 
-        # this time, the lights will turn off
-        lightbot.AMBIENT = False
+
+        if count == 20:
+            # increasing the brightness isn't doing anything for us...
+            # it's likely dark now and the lights should be all on, so turn off
+            # ambient lighting until the next time period
+            lightbot.AMBIENT = False
 
     if value and value >= max_ambient_level and \
        previous_value >= max_ambient_level:
@@ -60,19 +59,24 @@ def ambient_lights():
 def reenable_ambient_lights():
     lightbot.AMBIENT = True
 
-if enabled:
-    s = Scheduler()
+def load():
+    scheduler = Scheduler()
     # only perform ambient lighting from 7-8am, 4-8pm
     ambient_hours = range(7,9) + range(16, 21)
-    s.register(
-        Event(turn_off_lights, minute=0, hour=23, daysofweek=Event.WEEKDAYS),
-        Event(turn_off_lights, minute=0, hour=1, daysofweek=Event.WEEKEND),
+    scheduler.register('normal',
+        # turn off lights at 11pm sun-thurs
+        Event(turn_off_lights, hour=23, minute=0, 
+              daysofweek=[Event.SUNDAY, Event.MONDAY, Event.TUESDAY, 
+                          Event.WEDNESDAY, Event.THURSDAY]),
+        # turn off lights at 1am on sat-sun
+        Event(turn_off_lights, hour=1, minute=0, daysofweek=Event.WEEKEND),
         # turn off lights at 8:30am in case of ambient lighting on weekdays
-        Event(turn_off_lights, minute=30, hour=8, daysofweek=Event.WEEKDAYS),
+        Event(turn_off_lights, hour=8, minute=30, daysofweek=Event.WEEKDAYS),
         Event(ambient_lights, hour=ambient_hours),
         Event(reenable_ambient_lights, hour=[7,16]),
     )
 
-#TODO use load/unload functions so that different schedulers can be 
-# loaded/unloaded during runtime
+load()
+
+
 

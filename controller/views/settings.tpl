@@ -35,11 +35,6 @@ selected
           <br style="clear:both;"/>
         </li>
         <li data-role="fieldcontain" class="ui-grid-a">
-          <label for="high-light-txt" class="ui-block-a">High</label>
-          <input class="ui-block-b" type="text" name="high-light-txt" id="high-light-txt" value="{{ cfg.get('ambient', 'high') }}" />
-          <br style="clear:both;"/>
-        </li>
-        <li data-role="fieldcontain" class="ui-grid-a">
           <label for="max-light-txt" class="ui-block-a">Max</label>
           <input class="ui-block-b" type="text" name="max-light-txt" id="max-light-txt" value="{{ cfg.get('ambient', 'max') }}" />
           <br style="clear:both;"/>
@@ -49,14 +44,6 @@ selected
 
       <h3>Sensor value</h3>
       <p id="sensor-value">{{lightbot.query_sensor()}}</p>
-      <!--<h3>Ambient value</h3>
-      <p id="ambient-value">
-%if lightbot.AMBIENT:
-active
-%else:
-not active
-%end
-      </p>-->
     </div>
   </div>
 

@@ -2,6 +2,7 @@ import threading
 import time
 from log import get_log
 from datetime import datetime, timedelta
+from config import get_config
 
 # cron-like scheduler 
 # modified from http://stackoverflow.com/questions/373335/suggestions-for-a-cron-like-scheduler-in-python
@@ -32,6 +33,13 @@ class RescheduleException(Exception):
         self.daysofweek = to_set(daysofweek)
 
 class Event(object):
+    MONDAY    = 0
+    TUESDAY   = 1
+    WEDNESDAY = 2
+    THURSDAY  = 3
+    FRIDAY    = 4
+    SATURDAY  = 5
+    SUNDAY    = 6
     WEEKDAYS = range(0,5)   # monday-friday
     WEEKEND = range(6,8)    # saturday-sunday
 
@@ -81,27 +89,35 @@ class Scheduler:
     def __init__(self, *args, **kwargs):
         self.__dict__ = self.__shared_state
         self.log = get_log(self)
+        self.cfg = get_config()
         if getattr(self, "initialized", None) is None:
             self.running = True
             self.cond = threading.Condition()
-            self.events = []
+            self.events = {}
             self.th = None
             self.initialized = True
 
-    def register(self, *args):
-        self.events.extend(args)
+    def register(self, name, *args):
+        self.events[name] = args
         self.log.debug("Events=%s" % self.events)
 
-    def unregister(self, *args):
-        for e in args:
-            self.events.remove(e)
+    def unregister(self, name):
+        self.events.pop(name)
 
     def run(self):
         self.log.debug("Running scheduler...")
         t = datetime(*datetime.now().timetuple()[:5])
         while self.running:
+            active = self.cfg.get('scheduler', 'active')
             self.log.debug("Current time: %s" % datetime.now())
-            for e in self.events:
+            self.log.debug("Using '%s' schedule" % active)
+            try:
+                active_events = self.events[active]
+            except KeyError:
+                self.log.debug("Unknown event set '%s'" % active)
+                active_events = []
+
+            for e in active_events:
                 self.log.debug("Checking event %s" % e)
                 try:
                     e.check(t)
