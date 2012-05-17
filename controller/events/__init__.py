@@ -1,1 +1,1 @@
-__all__ = ["normal"]
+__all__ = ["normal", "away"]

@@ -2,8 +2,6 @@ import time
 import lightbot
 from log import get_log
 from scheduler import Scheduler,Event
-from x10commands import *
-from datetime import datetime
 from config import get_config
 
 cfg = get_config()
@@ -45,6 +43,7 @@ def ambient_lights():
             # increasing the brightness isn't doing anything for us...
             # it's likely dark now and the lights should be all on, so turn off
             # ambient lighting until the next time period
+            log.debug("Reached maximum level.  Turning ambient lighting off.")
             lightbot.AMBIENT = False
 
     if value and value >= max_ambient_level and \

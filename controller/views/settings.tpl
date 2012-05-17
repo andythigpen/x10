@@ -1,5 +1,6 @@
 %import lightbot
 %from config import get_config
+%from scheduler import Scheduler
 
 %cfg = get_config()
 
@@ -8,8 +9,18 @@
 
   <div data-role="content" data-iscroll>
     <div style="padding-bottom:2.5em;">
-      <!-- TODO: modify & save ambient light settings here -->
-      <!-- TODO: enable/disable ambient mode -->
+      <h3>Scheduler</h3>
+      <select id="scheduler-select">
+%active = cfg.get('scheduler', 'active')
+%s = Scheduler()
+%for name in s.get_event_names():
+        <option value="{{ name }}"
+%if name == active:
+selected
+%end
+        >{{ name.capitalize() }}</option>
+%end
+      </select>
 
       <h3>Ambient Lights</h3>
       <ul data-role="listview" data-inset="true">

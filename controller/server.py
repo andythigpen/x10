@@ -8,6 +8,7 @@ from bottle import request, route, static_file, template
 
 from scheduler import Scheduler
 from log import get_log
+from config import get_config
 import lightbot
 import programs
 
@@ -78,6 +79,17 @@ def static(path):
     d = os.path.realpath(os.path.dirname(__file__))
     return static_file(path, root='%s/static' % d)
 
+@route('/scheduler', method=['POST'])
+def schedule():
+    obj = request.forms
+    if not obj or obj.get('name', None) is None:
+        return {'msg': 'Missing form or variable name.'}
+
+    name = obj.get('name')
+    cfg = get_config()
+    cfg.set('scheduler', 'active', name)
+    cfg.save()
+    return {'msg': "Active schedule is now '%s'" % name}
 
 def run():
     s = Scheduler()

@@ -104,6 +104,9 @@ class Scheduler:
     def unregister(self, name):
         self.events.pop(name)
 
+    def get_event_names(self):
+        return self.events.keys()
+
     def run(self):
         self.log.debug("Running scheduler...")
         t = datetime(*datetime.now().timetuple()[:5])

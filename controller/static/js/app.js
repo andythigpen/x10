@@ -130,6 +130,11 @@ $(document).ready(function() {
     });
 
     /** Settings */
+    $("#scheduler-select").change(function() {
+        $.post('/scheduler', {"name": $(this).val()}, function(data) {
+            alert(data['msg']);
+        });
+    });
     $("#ambient-switch").change(function() {
         disableUiUpdate();
         var active = $(this).val() == "on";
