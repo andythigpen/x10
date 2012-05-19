@@ -20,9 +20,6 @@ for i in range(0,5):
 
 serial_lock = threading.Lock()
 
-#TODO separate this into to variables
-# 1 - Is the current time in an ambient range?
-# 2 - Has the ambient event detection already been triggered?
 AMBIENT     = True
 LIVING_ROOM = cfg.get('living_room', 'house')
 LIGHTS      = cfg.get('living_room', 'unit')

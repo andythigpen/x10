@@ -98,6 +98,32 @@ $(document).ready(function() {
             loadProgramsStatus);
     });
 
+    // this allows the voice dictation on iOS to work when the Done button
+    // is pressed on the keyboard
+    $("#keyboard-txt").change(function() {
+        if (! $(this).val()) {
+            return;
+        }
+        var sequence = "str "+$(this).val()+"\n";
+        $(this).val('');
+        $.post('/keyboard', {"sequence":sequence});
+    });
+
+    // send keyboard events through to xte
+    // must have the xautomation package installed (ubuntu)
+    $("#keyboard-txt").keyup(function(event) {
+        var key = $(this).val();
+        $(this).val('');
+
+        var sequence = "str "+key+"\n";
+        switch (event.which) {
+            case  8: sequence = "key BackSpace\n"; break;
+            case 13: sequence = "key Return\n"; break;
+            case 32: sequence = "key Space\n"; break;
+        }
+        $.post('/keyboard', {"sequence":sequence});
+    });
+
     $("#shutdown-btn").click(function() {
         disableUiUpdate();
         var when = $("#when").val();

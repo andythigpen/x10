@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import os
+import subprocess
 import inspect
 import serial
 import bottle
@@ -14,6 +15,9 @@ import programs
 
 # load all events...
 from events import *
+
+# for keyboard events to X
+DISPLAY = ":0.0"
 
 log = get_log("server")
 
@@ -90,6 +94,19 @@ def schedule():
     cfg.set('scheduler', 'active', name)
     cfg.save()
     return {'msg': "Active schedule is now '%s'" % name}
+
+# require xautomation package to be installed for xte
+@route('/keyboard', method=['POST'])
+def keyboard():
+    if not request.forms:        # GET
+        return {'msg': 'Error.'}
+
+    sequence = request.forms.get('sequence', '')
+    log.debug("keypress '%s'" % sequence)
+    s = subprocess.Popen(["xte", "-x", DISPLAY], stdin=subprocess.PIPE)
+    s.communicate(input=sequence)
+    return {'msg': 'ok'}
+
 
 def run():
     s = Scheduler()

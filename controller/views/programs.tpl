@@ -23,6 +23,8 @@ selected
         </li>
       </ul>
 
+      <input type="text" name="keyboard-txt" id="keyboard-txt" placeholder="Keyboard" autocorrect="off" autocapitalize="off" />
+
       <div data-role="fieldcontain">
         <div data-role="controlgroup">
           <a href="#" id="shutdown-btn" data-role="button">Shutdown</a>
