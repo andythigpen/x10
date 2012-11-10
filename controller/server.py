@@ -45,7 +45,10 @@ def lights():
         if not value is None:
             kwargs[variable] = value
 
-    func(**kwargs)
+    try:
+        func(**kwargs)
+    except:
+        log.exception()
     return lightbot.status()
 
 @route('/programs', method=['GET','POST'])
@@ -68,7 +71,10 @@ def progs():
         if not value is None:
             kwargs[variable] = value
 
-    func(**kwargs)
+    try:
+        func(**kwargs)
+    except:
+        log.exception()
     return programs.status()
 
 @route('/status')

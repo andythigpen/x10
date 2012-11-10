@@ -6,6 +6,8 @@ import re
 
 log = get_log("programs")
 
+xbmc_kill_count = 0
+
 def is_xbmc_running():
     s = subprocess.Popen(["pidof", "xbmc.bin"], stdout=subprocess.PIPE, 
             close_fds=True)
@@ -15,11 +17,12 @@ def is_xbmc_running():
     return False
 
 def start_xbmc():
-    s = subprocess.Popen(["start-xbmc"], close_fds=True)
+    s = subprocess.Popen(["/usr/sbin/start-xbmc"], close_fds=True)
     s.communicate()
     return is_xbmc_running()
 
 def stop_xbmc():
+    global xbmc_kill_count
     s = subprocess.Popen(["pidof", "xbmc.bin"], stdout=subprocess.PIPE, 
             close_fds=True)
     (pid, err) = s.communicate()
@@ -27,13 +30,21 @@ def stop_xbmc():
     if not pid:
         return False
 
-    s = subprocess.Popen(["kill", pid], close_fds=True)
+    cmd = ["kill", pid]
+    if xbmc_kill_count >= 2:
+        cmd = ["kill", "-9", pid]
+
+    s = subprocess.Popen(cmd, close_fds=True)
     s.communicate()
     count = 0
     while is_xbmc_running() and count < 10:
         time.sleep(0.5)
         count += 1
         print count
+    if is_xbmc_running():
+        xbmc_kill_count += 1
+    else:
+        xbmc_kill_count = 0
     return is_xbmc_running()
 
 def status():
