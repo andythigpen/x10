@@ -91,7 +91,7 @@ def lights_dim(repeat=4):
     serial_lock.release()
     log.debug("Serial response: %s" % result)
     if VALID_RESPONSE in result:
-        lights[LIVING_ROOM + LIGHTS] -= repeat
+        lights[LIVING_ROOM + LIGHTS] -= int(repeat)
         return True
     return False
 
@@ -107,7 +107,7 @@ def lights_bright(repeat=4):
     serial_lock.release()
     log.debug("Serial response: %s" % result)
     if VALID_RESPONSE in result:
-        lights[LIVING_ROOM + LIGHTS] += repeat
+        lights[LIVING_ROOM + LIGHTS] += int(repeat)
         return True
     return False
 

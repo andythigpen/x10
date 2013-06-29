@@ -206,7 +206,7 @@ class Log:
     CRITICAL  = LEVELS['critical']
     EXCEPTION = LEVELS['exception']
 
-    DEFAULT_LOG_LEVEL = DEBUG
+    DEFAULT_LOG_LEVEL = INFO
     DEFAULT_HANDLER = ConsoleLogHandler()
 
     def get_log_level_name(level):
