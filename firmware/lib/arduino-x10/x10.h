@@ -13,10 +13,9 @@
 #define x10_h
 
 // include types & constants of Wiring core API
-// #include <stdlib.h>
+#include <stdlib.h>
 #include "Arduino.h"
-//#include "WProgram.h"
-// #include "pins_arduino.h"
+#include "pins_arduino.h"
 
 // library interface description
 class x10 {

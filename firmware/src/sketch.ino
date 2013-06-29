@@ -1,6 +1,10 @@
 #include <x10.h>
 #include <x10constants.h>
 
+// temperature sensor
+#include <Wire.h>
+#include <DS1631.h>
+
 // X10 pin assignments
 #define ZC_PIN       2
 #define TRANS_PIN    6
@@ -15,7 +19,8 @@
 #define INITIAL_STATE    COMMAND_STATE
 
 // Commands
-#define CMD_SENSOR_QUERY    's'
+#define CMD_LIGHT_QUERY     's'
+#define CMD_TEMP_QUERY      't'
 #define CMD_X10             'x'
 #define CMD_HELP            '?'
 
@@ -47,6 +52,9 @@ int currentRepeatTimes = 0;
 
 // Photoresistor analog input
 int sensorValue = 0;
+
+// initialize temperature sensor with bus address of 0 (A0-2 tied to ground)
+DS1631 temperature(0);
 
 void sendX10Command() {
   int houseCode, unitCode, command, repeatTimes;
@@ -99,15 +107,20 @@ void printCurrentState() {
     Serial.write(currentAction);
     Serial.print(" Repeat:");
     Serial.write(currentRepeatTimes);
-    Serial.print("\n");
+    Serial.print("\r\n");
 }
 
 void handleCommand(int command) {
   switch (commandState) {
     case COMMAND_STATE:
-      if (command == CMD_SENSOR_QUERY) {
+      if (command == CMD_LIGHT_QUERY) {
         sensorValue = analogRead(analogInPin);
         Serial.println(map(sensorValue, 0, 1023, 0, 255));
+      }
+      else if (command == CMD_TEMP_QUERY) {
+        // get temperature sensor value
+        float temp = temperature.readTempOneShot();
+        Serial.println(temp, 4);
       }
       else if (command == CMD_X10) {
         commandState = HOUSE_CODE_STATE;
@@ -116,8 +129,8 @@ void handleCommand(int command) {
         Serial.println("Lightbot 5000 reporting for duty!");
         Serial.println("Current state: ");
         printCurrentState();
-        Serial.print(CMD_SENSOR_QUERY);
-        Serial.println(": returns current sensor value");
+        Serial.print(CMD_LIGHT_QUERY);
+        Serial.println(": returns current light sensor value");
         Serial.print(CMD_X10);
         Serial.println(": send an X10 command, format:");
         Serial.println("   [house][unit][repeat][action]");
@@ -189,6 +202,19 @@ void handleCommand(int command) {
 void setup() {
   pinMode(ledPin, OUTPUT);
   Serial.begin(9600);
+
+  // join I2C bus for temperature sensor
+  Wire.begin();
+  //int config = temperature.readConfig();
+  //Serial.print("Temperature settings before: ");
+  //Serial.println(config, BIN);
+
+  // set temperature sensor to 12-bit, 1 shot mode
+  temperature.writeConfig(13);
+
+  //config = temperature.readConfig();
+  //Serial.print("Temperature settings after: ");
+  //Serial.println(config, BIN);
 }
 
 void loop() {
